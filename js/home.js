@@ -68,72 +68,86 @@ fetch ('https://randomuser.me/api/')
   .catch (function () {
     console.log ("algo fallo")
   });
+  
+  
+  
+  
+  (async function load () {
+    async function getData (url) {
+      const response = await fetch  (url)
+      const data = await response.json()
+      return data
+    }
+    const $form = document.getElementById('form')
+    $form.addEventListener('submit', () => {
+      
+    })
 
 
+    const actionList = await getData ('https://yts.mx/api/v2/list_movies.json?genre=action')
+    const dramaList = await getData ('https://yts.mx/api/v2/list_movies.json?genre=drama')
+    const animationList = await getData ('https://yts.mx/api/v2/list_movies.json?genre=animation')
+    console.log (actionList, dramaList , animationList)
 
+    function videoItemTemplate ( movie) {
+      return (  
+        `<div class="primaryPlaylistItem">
+        <div class="primaryPlaylistItem-image">
+        <img src=${movie.medium_cover_image}>
+        </div>
+        <h4 class="primaryPlaylistItem-title">
+          ${movie.title}
+        </h4>
+        </div>`
+      )} // esta funcion es el template de como quiero presentar cada pelicula
 
-(async function load () {
-  async function getData (url) {
-    const response = await fetch  (url)
-    const data = await response.json()
-    return data
-  }
+    function createTemplate (HTMLString){
+        const html = document.implementation.createHTMLDocument()
+        html.body.innerHTML =  HTMLString;
+        return html.body.children[0];
+    }
 
-  const actionList = await getData ('https://yts.mx/api/v2/list_movies.json?genre=action')
-  const dramaList = await getData ('https://yts.mx/api/v2/list_movies.json?genre=drama')
-  const animationList = await getData ('https://yts.mx/api/v2/list_movies.json?genre=animation')
-  console.log (actionList, dramaList , animationList)
+    function addEventClick ($element){
+      $element.addEventListener('click', function(){
+        alert('hiciste click')
+      })
+    }
 
-function videoItemTemplate ( movie) {
-  return (  
-    `<div class="primaryPlaylistItem">
-    <div class="primaryPlaylistItem-image">
-     <img src=${movie.medium_cover_image}>
-    </div>
-    <h4 class="primaryPlaylistItem-title">
-      ${movie.title}
-    </h4>
-    </div>`
-  )}
-
-
-  const $actionContainer = document.getElementById('action')
-  actionList.data.movies.forEach((movie) => {
-
-    const HTMLString = videoItemTemplate (movie)
-    const html = document.implementation.createHTMLDocument()
-    html.body.innerHTML =  HTMLString
-    // debugger  // debugger para chequear en consola si lo creo correctamente.
     
+    function renderMovielist (list, $container){
+      $container.children[0].remove();  // con esta entrada estamos removiendo el primer elemento dentro del container, que es la imagen del loader.
+      // actionList.data.movies    =    list.
+      list.forEach((movie) => {
+        const HTMLString = videoItemTemplate (movie); 
+        const movieElement = createTemplate(HTMLString);
+        $container.append(movieElement); 
+        addEventClick(movieElement);
+    })
+
+    };
+    const $actionContainer = document.getElementById('action')
+    renderMovielist (actionList.data.movies, $actionContainer )
     
-    $actionContainer.append(html.body.children[0])
-    // console.log(HTMLString)
-    
-  });
+    const $dramaContainer = document.getElementById('drama')
+    renderMovielist (dramaList.data.movies, $dramaContainer )
+    const $animationContainer = document.getElementById('animation')
+    renderMovielist (animationList.data.movies, $animationContainer )
+
+  const $featuringContainer = document.getElementById('featuring')
+  const $home = document.getElementById('home')
+
+  const $modal = document.getElementById('modal')
+  const $overlay = document.getElementById('overlay')
+  const $hideModal = document.getElementById('hide-modal')
+
+  const $modalTitle = $modal.querySelector('h1')
+  const $modalImage = $modal.querySelector('img')
+  const $modalDescription = $modal.querySelector('p')
 
 
 
 
-
-const $dramaContainer = document.getElementById('drama')
-const $animationContainer = document.getElementById('animation')
-
-const $featuringContainer = document.getElementById('featuring')
-const $form = document.getElementById('form')
-const $home = document.getElementById('home')
-
-const $modal = document.getElementById('modal')
-const $overlay = document.getElementById('overlay')
-const $hideModal = document.getElementById('hide-modal')
-
-const $modalTitle = $modal.querySelector('h1')
-const $modalImage = $modal.querySelector('img')
-const $modalDescription = $modal.querySelector('p')
+    // console.log (videoItemTemplate ('images/covers/bitcoin.jpg', 'bitcoin'))
 
 
-
-
-  // console.log (videoItemTemplate ('images/covers/bitcoin.jpg', 'bitcoin'))
-
-
-}) ();
+  }) ();
