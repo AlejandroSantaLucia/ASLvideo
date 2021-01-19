@@ -78,9 +78,13 @@ fetch ('https://randomuser.me/api/')
       const data = await response.json()
       return data
     }
+
     const $form = document.getElementById('form')
-    $form.addEventListener('submit', () => {
-      
+    const $home = document.getElementById('home')
+    
+    $form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      classList.add ('search-active')
     })
 
 
@@ -109,7 +113,8 @@ fetch ('https://randomuser.me/api/')
 
     function addEventClick ($element){
       $element.addEventListener('click', function(){
-        alert('hiciste click')
+        // alert('hiciste click')
+        showModal()
       })
     }
 
@@ -134,7 +139,7 @@ fetch ('https://randomuser.me/api/')
     renderMovielist (animationList.data.movies, $animationContainer )
 
   const $featuringContainer = document.getElementById('featuring')
-  const $home = document.getElementById('home')
+ 
 
   const $modal = document.getElementById('modal')
   const $overlay = document.getElementById('overlay')
@@ -144,6 +149,18 @@ fetch ('https://randomuser.me/api/')
   const $modalImage = $modal.querySelector('img')
   const $modalDescription = $modal.querySelector('p')
 
+
+  function showModal(){
+    $overlay.classList.add('active')
+    $modal.style.animation = 'modalIn .8s forwards'
+  }
+
+  $hideModal.addEventListener('click',hideModal)
+    function hideModal () {
+      $overlay.classList.remove('active')
+      $modal.style.animation = 'modalOut .8s forwards'
+    }
+  
 
 
 
