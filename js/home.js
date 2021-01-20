@@ -113,7 +113,7 @@ fetch ('https://randomuser.me/api/')
 
     function addEventClick ($element){
       $element.addEventListener('click', function(){
-        // alert('hiciste click')
+        alert('hiciste click')
         showModal()
       })
     }
