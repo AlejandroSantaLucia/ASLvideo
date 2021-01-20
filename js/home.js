@@ -84,7 +84,7 @@ fetch ('https://randomuser.me/api/')
     
     $form.addEventListener('submit', (event) => {
       event.preventDefault();
-      classList.add ('search-active')
+      $home.classList.add('search-active')
     })
 
 
