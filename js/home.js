@@ -88,19 +88,42 @@ fetch ('https://randomuser.me/api/')
         $element.setAttribute(attribute, attributes[attribute]);
       }
     }
+
+    function featuringTemplate (peli) {
+      return (
+        `
+        <div class="featuring">
+        <div class="featuring-image">
+          <img src="${peli.medium_cover_image}" width="70" height="100" alt="">
+        </div>
+        <div class="featuring-content">
+          <p class="featuring-title">Pelicula encontrada</p>
+          <p class="featuring-album">"${peli.title}" </p>
+        </div>
+      </div>
+        `
+      )
+    }
+
   
-    $form.addEventListener('submit', (event) => {
+    $form.addEventListener("submit", async (event) => {
+      // debugger
       event.preventDefault();
       $home.classList.add('search-active')
       const $loader = document.createElement('img');
       setAttributes($loader, {
-        src: 'src/images/loader.gif',
+        src: 'images/loader.gif',
         height: 50,
         width: 50,
       })
       $featuringContainer.append($loader);
-  
-  
+      
+
+      const data = new FormData($form)
+      const peli = await getData (`https://yts.mx/api/v2/list_movies.json?limit=1&query_term=${data.get('name')}`)
+      
+      const HTMLString = featuringTemplate(peli.data.movies[0])
+      $featuringContainer.innerHTML = HTMLString
     })
 
 
@@ -109,9 +132,9 @@ fetch ('https://randomuser.me/api/')
     const animationList = await getData ('https://yts.mx/api/v2/list_movies.json?genre=animation')
     console.log (actionList, dramaList , animationList)
 
-    function videoItemTemplate ( movie) {
+    function videoItemTemplate ( movie, category) {
       return (  
-        `<div class="primaryPlaylistItem">
+        `<div class="primaryPlaylistItem" data-id="${movie.id}" data-category="${category}">
         <div class="primaryPlaylistItem-image">
         <img src=${movie.medium_cover_image}>
         </div>
@@ -130,16 +153,16 @@ fetch ('https://randomuser.me/api/')
     function addEventClick ($element){
       $element.addEventListener('click', function(){
         // alert('hiciste click')
-        showModal()
+        showModal($element)
       })
     }
 
     
-    function renderMovielist (list, $container){
+    function renderMovielist (list, $container, category){
       $container.children[0].remove();  // con esta entrada estamos removiendo el primer elemento dentro del container, que es la imagen del loader.
       // actionList.data.movies    =    list.
       list.forEach((movie) => {
-        const HTMLString = videoItemTemplate (movie); 
+        const HTMLString = videoItemTemplate (movie, category); 
         const movieElement = createTemplate(HTMLString);
         $container.append(movieElement); 
         addEventClick(movieElement);
@@ -147,12 +170,12 @@ fetch ('https://randomuser.me/api/')
 
     };
     const $actionContainer = document.getElementById('action')
-    renderMovielist (actionList.data.movies, $actionContainer )
+    renderMovielist (actionList.data.movies, $actionContainer, "action" )
     
     const $dramaContainer = document.getElementById('drama')
-    renderMovielist (dramaList.data.movies, $dramaContainer )
+    renderMovielist (dramaList.data.movies, $dramaContainer, "drama" )
     const $animationContainer = document.getElementById('animation')
-    renderMovielist (animationList.data.movies, $animationContainer )
+    renderMovielist (animationList.data.movies, $animationContainer, "animation" )
 
  
  
@@ -166,9 +189,11 @@ fetch ('https://randomuser.me/api/')
   const $modalDescription = $modal.querySelector('p')
 
 
-  function showModal(){
+  function showModal($element){
     $overlay.classList.add('active')
     $modal.style.animation = 'modalIn .8s forwards'
+    const id = $element.dataset.id
+    const category = $element.dataset.category
   }
 
   $hideModal.addEventListener('click',hideModal)
@@ -180,7 +205,7 @@ fetch ('https://randomuser.me/api/')
 
 
 
-    // console.log (videoItemTemplate ('images/covers/bitcoin.jpg', 'bitcoin'))
+  
 
 
   }) ();
