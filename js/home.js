@@ -183,13 +183,29 @@ fetch ('https://randomuser.me/api/')
 
     };
 
-    const {data: { movies: actionList}} = await getData ('https://yts.mx/api/v2/list_movies.json?genre=action')
+    async function cacheExist(category) {
+      const listName = `${category}List`
+      const cacheList = window.localStorage.getItem(listName);
+      if (cacheList){
+        return JSON.parse(cacheList) // con este if lo que hacemos es chequear que, en caso de que haya un dato en cacheList, nos retorne ese dato en forma de objeto
+      }
+
+      const {data: { movies: data}} = await getData (`https://yts.mx/api/v2/list_movies.json?genre=${category}`) // en caso de que el if sea negativo, que nos procese el getData desde la direccion.
+      window.localStorage.setItem(listName, JSON.stringify(data))
+
+      return data 
+    }
+
+    const actionList = await cacheExist('action')
+    // window.localStorage.setItem('actionList', JSON.stringify(actionList))
     const $actionContainer = document.getElementById('action')
     renderMovielist (actionList, $actionContainer, "action" )
-    const {data: { movies: dramaList}} = await getData ('https://yts.mx/api/v2/list_movies.json?genre=drama')
+
+    const dramaList = await cacheExist('drama')
     const $dramaContainer = document.getElementById('drama')
     renderMovielist (dramaList, $dramaContainer, "drama" )
-    const {data: { movies: animationList}} = await getData ('https://yts.mx/api/v2/list_movies.json?genre=animation')
+
+    const animationList = await cacheExist('animation')
     const $animationContainer = document.getElementById('animation')
     renderMovielist (animationList, $animationContainer, "animation" )
     
